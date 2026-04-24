@@ -206,8 +206,8 @@
         <h3>What we inherited</h3>
         <div class="card card--red">
           <ul>
-            <li><strong>Multi-annotation entity</strong> — <code>Album.java</code> carries <code>@Entity</code>, <code>@Document</code>, <code>@RedisHash</code> simultaneously</li>
-            <li><strong>Cloud Foundry lock-in</strong> — <code>manifest.yml</code> + end-of-life <code>spring-cloud-connectors</code></li>
+            <li><strong>Multi-DB profile coupling</strong> — <code>Album.java</code> uses only <code>@Entity</code>; three separate repo classes (JPA / MongoDB / Redis) all bundled in one JAR, activated by Spring profile at startup</li>
+            <li><strong>Cloud Foundry lock-in</strong> — <code>manifest.yml</code> + <code>java-cfenv-boot</code> reads <code>VCAP_SERVICES</code> to activate DB profiles; infra baked into the app</li>
             <li><strong>Bundled frontend</strong> — AngularJS compiled into the JAR, no independent deployment</li>
             <li><strong>Zero API contract</strong> — no OpenAPI spec; consumers depend on observed behavior</li>
             <li><strong>No characterization tests</strong> — behavior is completely unpinned</li>
@@ -270,7 +270,7 @@
         <h3>Why not Lift-and-Shift</h3>
         <ul>
           <li>Moves CF to container, solves nothing</li>
-          <li>Multi-annotation problem remains</li>
+          <li>Multi-DB profile coupling remains</li>
           <li>False sense of done</li>
         </ul>
       </div>
@@ -355,9 +355,9 @@
                   <div style="font-size:0.64rem;color:#f87171;margin-top:2px">⚠ coupled deploy</div>
                 </div>
                 <div style="flex:2;background:#3d1515;border:1px solid #dc2626;border-radius:5px;padding:6px 8px;text-align:center">
-                  <div style="font-size:0.78rem;font-weight:600;color:#fca5a5">AlbumController + AbstractAlbumRepository</div>
-                  <div style="font-size:0.64rem;color:#64748b;margin-top:2px">Album.java: <code>@Entity</code> <code>@Document</code> <code>@RedisHash</code></div>
-                  <div style="font-size:0.64rem;color:#f87171;margin-top:2px">⚠ multi-annotation entity</div>
+                  <div style="font-size:0.78rem;font-weight:600;color:#fca5a5">AlbumController + CrudRepository&lt;Album,String&gt;</div>
+                  <div style="font-size:0.64rem;color:#64748b;margin-top:2px">JpaAlbumRepository / MongoAlbumRepository / RedisAlbumRepository — all bundled</div>
+                  <div style="font-size:0.64rem;color:#f87171;margin-top:2px">⚠ profile-based repo activation</div>
                 </div>
               </div>
             </div>
@@ -384,7 +384,7 @@
             </div>
 
             <div style="background:#1e2235;border:1px solid #475569;border-radius:5px;padding:6px 10px;font-size:0.72rem;color:#94a3b8">
-              ☁ Cloud Foundry: <code>manifest.yml</code> → <code>VCAP_SERVICES</code> → <code>spring-cloud-connectors</code> (EOL)
+              ☁ Cloud Foundry: <code>manifest.yml</code> → <code>VCAP_SERVICES</code> → <code>java-cfenv-boot</code> → <code>SpringApplicationContextInitializer</code> activates profile
             </div>
 
           </div>
@@ -395,9 +395,9 @@
         <h3>Anti-patterns identified</h3>
         <div class="card card--red">
           <ul>
-            <li><strong>Multi-annotation entity</strong> — <code>Album.java</code> carries <code>@Entity</code>, <code>@Document</code>, <code>@RedisHash</code> simultaneously</li>
-            <li><strong>SPA bundled in JAR</strong> — AngularJS compiled into the Spring Boot artifact; cannot deploy UI independently</li>
-            <li><strong>CF lock-in</strong> — <code>manifest.yml</code> + EOL <code>spring-cloud-connectors</code>; infra baked into app</li>
+            <li><strong>Multi-DB profile coupling</strong> — all three repo classes (JPA, MongoDB, Redis) bundled in one JAR; <code>SpringApplicationContextInitializer</code> reads <code>VCAP_SERVICES</code> and activates one at startup</li>
+            <li><strong>SPA bundled in JAR</strong> — AngularJS served as WebJars from the Spring Boot artifact; cannot deploy UI independently</li>
+            <li><strong>CF lock-in</strong> — <code>manifest.yml</code> + <code>java-cfenv-boot</code> ties deployment to Cloud Foundry; infra baked into app</li>
             <li><strong>Zero API contract</strong> — no OpenAPI spec; consumers depend on observed HTTP behavior</li>
             <li><strong>No characterization tests</strong> — behavior completely unpinned before extraction</li>
           </ul>
@@ -491,8 +491,8 @@
           <ul>
             <li><strong>Decoupled deploy</strong> — each container ships and scales independently</li>
             <li><strong>Clean API contract</strong> — no Spring annotations in public responses; ACL enforces boundary</li>
-            <li><strong>Zero CF dependency</strong> — no manifest.yml, no spring-cloud-connectors</li>
-            <li><strong>Single DB per service</strong> — one storage technology, no multi-annotation entity</li>
+            <li><strong>Zero CF dependency</strong> — no manifest.yml, no java-cfenv-boot; deploy anywhere</li>
+            <li><strong>Single DB per service</strong> — one storage technology, no bundled multi-DB repo selection</li>
             <li><strong>Contract tested</strong> — 10+ tests pin the API shape independently</li>
           </ul>
         </div>
@@ -518,7 +518,7 @@
       <div class="card card--green">
         <h3>Phase 1 — Understand <span class="badge badge--done">done</span></h3>
         <ul>
-          <li>Map call graph: <code>AbstractAlbumRepository</code> hierarchy</li>
+          <li>Map call graph: <code>CrudRepository&lt;Album,String&gt;</code> implementations (JPA / MongoDB / Redis)</li>
           <li>Identify primary coupling risk: multi-DB profile pattern + CF connectors</li>
           <li>Pin HTTP behavior with characterization tests (bugs included)</li>
           <li>ADR-001: Strangler Fig selected over Big-Bang / Lift-and-Shift</li>
@@ -547,7 +547,7 @@
         <ul>
           <li>Remove <code>spring-cloud-connectors</code> + delete <code>manifest.yml</code></li>
           <li>Extract AngularJS frontend as independent SPA deployment</li>
-          <li>Clean <code>Album.java</code> — remove <code>@Entity</code>/<code>@Document</code>/<code>@RedisHash</code></li>
+          <li>Remove bundled DB drivers + profile-based repo selection from <code>build.gradle</code></li>
           <li>Archive <code>/legacy</code> — monolith becomes read-only history</li>
         </ul>
       </div>
@@ -581,7 +581,7 @@
         <h3>Phase 4: Retire (weeks 4–8)</h3>
         <div class="card" style="border-color:#475569; background:#13131f">
           <ul>
-            <li>Remove <code>spring-cloud-connectors</code> from <code>build.gradle</code></li>
+            <li>Remove <code>java-cfenv-boot</code> from <code>build.gradle</code></li>
             <li>Delete <code>manifest.yml</code>; update deployment docs to container / k8s</li>
             <li>Extract AngularJS SPA — separate repo, separate CI pipeline</li>
             <li>Clean <code>Album.java</code> of multi-persistence annotations</li>
@@ -659,7 +659,7 @@
       </div>
       <div class="card">
         <h3>ADR-002 — spring-music as legacy (option B)</h3>
-        <p style="font-size:0.9rem;color:#94a3b8;margin-top:4px">Real code, real anti-patterns (<code>Album.java</code> carries JPA+MongoDB+Redis annotations), genuine CF coupling. More interesting than generated ugliness.</p>
+        <p style="font-size:0.9rem;color:#94a3b8;margin-top:4px">Real code, real anti-patterns: all three DB repo classes (JPA / MongoDB / Redis) bundled in one JAR with profile-based activation via <code>java-cfenv-boot</code>, genuine CF coupling. More instructive than generated ugliness.</p>
       </div>
       <div class="card card--yellow">
         <h3>ADR-003 — PreToolUse hook vs. CLAUDE.md prompt</h3>
@@ -680,7 +680,7 @@
         <h3>Where it saved the most time</h3>
         <div class="card card--green">
           <ul>
-            <li><strong>Legacy archaeology</strong> — call-graph analysis of <code>AbstractAlbumRepository</code> in minutes</li>
+            <li><strong>Legacy archaeology</strong> — mapped <code>CrudRepository&lt;Album,String&gt;</code> implementations and profile-activation chain in minutes</li>
             <li><strong>Characterization tests</strong> — pinned HTTP behavior including known quirks faster than writing manually</li>
             <li><strong>ADR drafting</strong> — bullet list → full ADR with "what we chose NOT to do" sections</li>
             <li><strong>CLAUDE.md-driven boundaries</strong> — taught ACL rule once, respected across all generations</li>
