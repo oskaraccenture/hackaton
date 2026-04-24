@@ -10,32 +10,69 @@ Extract a business domain from the spring-music monolith into a standalone micro
 
 Example: `/extract-service albums`
 
-## What this command does
+## Subagent orchestration
 
-1. **Analyze the seam** — reads `legacy/src/main/java/.../` and identifies:
-   - Classes belonging to `<domain>` (repositories, controllers, services)
-   - Database tables / MongoDB collections / Redis keys touched
-   - All callers of domain classes
-2. **Identify coupling points** — lists Spring profiles and CF bindings that bind to this domain
-3. **Generate the service skeleton** in `services/<domain>-service/`:
-   - `package.json`
-   - `index.js` (Express app, health endpoint)
-   - `db.js` (SQLite in-memory, parameterized queries)
-   - `routes/<domain>.js` (clean REST API, camelCase)
-   - `acl/<domain>Adapter.js` (Spring model → domain model translation)
-   - `tests/contract.test.js` (no Spring fields in responses)
-4. **Write the ACL** — maps Spring-era field names to clean domain names
-5. **Update ADR-001** — adds an extraction record
+This command runs three sequential subagents. Do not skip phases.
+
+### Phase 1 — Seam analysis (subagent_type: Explore, thoroughness: very thorough)
+
+Spawn an Explore subagent with this prompt:
+
+```
+Analyze the spring-music monolith at legacy/src/main/java/ to map the extraction seam for domain "$ARGUMENTS".
+Report:
+1. All Java classes belonging to this domain (controllers, services, repositories, entities)
+2. Database tables / collections / keys touched by those classes
+3. Every caller of those classes from outside the domain
+4. Spring profiles and VCAP_SERVICES bindings coupled to this domain
+5. Fields exposed in HTTP responses — flag Spring annotations (@Document, @Entity, @Column, _class)
+Return a structured report; do not write any files.
+```
+
+### Phase 2 — Implementation plan (subagent_type: Plan)
+
+Spawn a Plan subagent, passing the Explore report as context:
+
+```
+Design the extraction plan for the "$ARGUMENTS" domain from spring-music.
+Seam analysis: <Explore output>
+
+Plan must cover:
+- Files to create under services/$ARGUMENTS-service/ (package.json, index.js, db.js, routes/, acl/, tests/)
+- ACL field mappings: legacy field → clean domain field
+- Contract test cases including assertions that no Spring annotation appears in responses
+- Whether decisions/001-modernization-strategy.md needs an amendment
+
+Output: numbered file list with one-sentence purpose per file. No code yet.
+```
+
+### Phase 3 — Code generation (subagent_type: general-purpose)
+
+Spawn a general-purpose subagent, passing the Plan output as context:
+
+```
+Implement the $ARGUMENTS-service. Repo root: /home/oskarc35/workshop/claude-code-hackathon/hackaton
+Plan: <Plan output>
+
+Rules (hard constraints — PreToolUse hook will block violations):
+- async/await only, no callbacks
+- Structured errors: { "error": { "code": "UPPER_SNAKE", "message": "..." } }
+- No Spring annotations (@Document, @Entity, @Column, _class) in any route response
+- ACL in services/$ARGUMENTS-service/acl/$ARGUMENTSAdapter.js is the only place that knows Spring shapes
+- Parameterized SQL — no string concatenation
+
+After writing all files run: cd services/$ARGUMENTS-service && npm install && npm test
+Report each test pass/fail.
+```
 
 ## Rules applied automatically
 
 - camelCase field names in all responses
 - No Spring annotations anywhere in service code
-- Structured errors: `{ "error": { "code": "UPPER_SNAKE", "message": "..." } }`
+- Contract test asserts absence of `_class`, `@Document`, `@Entity` in API responses
 - Parameterized queries only (no string concatenation)
-- Contract test asserts absence of `_class`, `_id`, Spring annotation strings
 
 ## Before running
 
 Ensure characterization tests pass: `cd tests/characterization && ./run.sh`
-If they don't pass, the monolith isn't running — start it first: `cd legacy && ./gradlew bootRun`
+If they fail, start the monolith first: `cd legacy && ./gradlew bootRun`
