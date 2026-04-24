@@ -613,8 +613,8 @@
             <li>The Map (ADRs) <span class="badge badge--done">done</span></li>
             <li>The Pin (characterization tests) <span class="badge badge--done">done</span></li>
             <li>The Cut (album-service) <span class="badge badge--done">done</span></li>
-            <li>The Fence (ACL + hook) <span class="badge badge--partial">partial</span></li>
-            <li>The Weekend (cutover) <span class="badge badge--partial">partial</span></li>
+            <li>The Fence (ACL + hook) <span class="badge badge--done">done</span></li>
+            <li>The Weekend (cutover) <span class="badge badge--done">done</span></li>
           </ul>
         </div>
       </div>
@@ -626,7 +626,7 @@
             <li><code>/services/album-service/</code> — extracted service</li>
             <li><code>/services/album-service/acl/</code> — anti-corruption layer</li>
             <li><code>/tests/characterization/</code> — behavior pinning</li>
-            <li><code>/decisions/</code> — 3 ADRs</li>
+            <li><code>/decisions/</code> — 4 ADRs</li>
             <li><code>CLAUDE.md</code> — 3-level project config</li>
             <li><code>/.claude/commands/</code> — 3 custom slash commands</li>
           </ul>
@@ -635,7 +635,7 @@
     </div>
     <div class="grid grid-3" style="margin-top:1.5rem">
       <div class="card" style="text-align:center">
-        <div class="big-number">3</div>
+        <div class="big-number">4</div>
         <div class="big-label">ADRs written</div>
       </div>
       <div class="card" style="text-align:center">
@@ -715,7 +715,7 @@
             <li>Database-per-service split — separate H2 instances per service</li>
             <li>API gateway / façade routing traffic between legacy and new service</li>
             <li>Extract the AngularJS frontend to a separate deployment</li>
-            <li>Complete <code>PreToolUse</code> hook — currently scaffolded only</li>
+            <li>Extend <code>PreToolUse</code> hook to cover additional services as they are extracted</li>
             <li>CI pipeline: characterization suite as regression gate</li>
             <li>The Scorecard — eval harness for LLM-driven refactoring confidence</li>
           </ul>

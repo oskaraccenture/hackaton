@@ -28,9 +28,9 @@ What's faked: real database backends — H2 in-memory for demo.
 | 3 | The Map | done | Decomposition ADR in `/decisions/001-modernization-strategy.md` |
 | 4 | The Pin | done | Characterization tests in `/tests/characterization` |
 | 5 | The Cut | done | Album service extracted to `/services/album-service` |
-| 6 | The Fence | partial | ACL in place, PreToolUse hook scaffolded |
+| 6 | The Fence | done | ACL in place, PreToolUse hook enforces boundary (JSON stdin, jq, blocks @Entity/@Document/albumId in routes/) |
 | 7 | The Scorecard | skipped | |
-| 8 | The Weekend | partial | Cutover notes in `/decisions/004-cutover-runbook.md` |
+| 8 | The Weekend | done | Cutover runbook in `/decisions/004-cutover-runbook.md` — 4-stage canary with gate criteria and rollback matrix |
 
 ## Key Decisions
 
