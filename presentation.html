@@ -285,8 +285,234 @@
     </div>
   </div>
 
-  <!-- SLIDE 4: Modernization Roadmap -->
+  <!-- SLIDE 4: C4 Level 1 — System Context -->
   <div class="slide" id="slide-4">
+    <h2>C4 Level 1 — System Context</h2>
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;flex:1">
+
+      <div style="text-align:center;background:#1e3a5f;border:2px solid #2563eb;border-radius:8px;padding:14px 32px">
+        <div style="font-size:1.8rem;line-height:1.1">◉</div>
+        <div style="font-size:1rem;font-weight:700;color:#f1f5f9;margin-top:4px">Music Catalog User</div>
+        <div style="font-size:0.72rem;color:#64748b;font-style:italic;margin:4px 0">[Person]</div>
+        <div style="font-size:0.8rem;color:#94a3b8">Browses and manages the album catalog via a web browser</div>
+      </div>
+
+      <div style="text-align:center">
+        <div style="font-size:0.72rem;color:#64748b">Uses · HTTPS</div>
+        <div style="font-size:1.5rem;color:#475569;line-height:1">↓</div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:2rem">
+
+        <div style="text-align:center;background:#172040;border:3px solid #2563eb;border-radius:8px;padding:18px 28px;min-width:280px">
+          <div style="font-size:1rem;font-weight:700;color:#f1f5f9">Music Catalog System</div>
+          <div style="font-size:0.72rem;color:#7dd3fc;font-style:italic;margin-bottom:10px">[Software System — New]</div>
+          <div style="font-size:0.8rem;color:#94a3b8;line-height:1.6">Modernized album catalog platform.<br>Node.js microservices · REST APIs.<br>API gateway · album service · SPA.</div>
+        </div>
+
+        <div style="text-align:center;min-width:90px">
+          <div style="font-size:0.68rem;color:#64748b;margin-bottom:4px">Strangler Fig</div>
+          <div style="font-size:1rem;color:#475569">←──→</div>
+          <div style="font-size:0.68rem;color:#64748b;margin-top:4px">traffic migration</div>
+        </div>
+
+        <div style="text-align:center;background:#3d1515;border:2px solid #dc2626;border-radius:8px;padding:18px 28px;min-width:260px">
+          <div style="font-size:1rem;font-weight:700;color:#fca5a5">Legacy Spring Music</div>
+          <div style="font-size:0.72rem;color:#f87171;font-style:italic;margin-bottom:10px">[Software System — Retiring]</div>
+          <div style="font-size:0.8rem;color:#94a3b8;line-height:1.6">Spring Boot 2.x · Cloud Foundry.<br>Multi-DB profiles · CF manifest.<br>AngularJS bundled in JAR.</div>
+        </div>
+
+      </div>
+    </div>
+    <div style="padding-top:10px;font-size:0.72rem;color:#475569;border-top:1px solid #1e2235;text-align:center">
+      C4 Model · Level 1 — System Context: who uses the system and what external systems it interacts with
+    </div>
+  </div>
+
+  <!-- SLIDE 5: C4 Level 2 — Legacy Architecture (Before) -->
+  <div class="slide" id="slide-5">
+    <h2>C4 Level 2 — Legacy Architecture <span style="font-size:1rem;color:#64748b;font-weight:400">(Before)</span></h2>
+    <div class="grid grid-2" style="gap:1.5rem;flex:1">
+
+      <div style="display:flex;flex-direction:column;gap:0.5rem">
+
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <div style="background:#1e3a5f;border:1px solid #2563eb;border-radius:6px;padding:6px 14px;font-size:0.82rem;font-weight:600;color:#f1f5f9">◉ User &nbsp;<span style="font-style:italic;font-weight:400;color:#64748b;font-size:0.68rem">[Person]</span></div>
+          <div style="font-size:0.7rem;color:#64748b">HTTPS ↓</div>
+        </div>
+
+        <div style="border:2px dashed #dc262255;border-radius:12px;padding:10px;flex:1;position:relative">
+          <span style="position:absolute;top:-10px;left:14px;background:#0f0f1a;padding:0 8px;font-size:0.7rem;color:#fca5a5;font-weight:600">LEGACY SPRING MUSIC</span>
+
+          <div style="display:flex;flex-direction:column;gap:6px;height:100%">
+
+            <div style="border:2px dashed #dc262288;border-radius:8px;padding:8px;background:#2a0f0f;position:relative">
+              <span style="position:absolute;top:-9px;left:10px;background:#2a0f0f;padding:0 6px;font-size:0.65rem;color:#f87171">Spring Boot JAR :8080 — single deployable</span>
+              <div style="display:flex;gap:6px;margin-top:4px">
+                <div style="flex:1;background:#3d1515;border:1px solid #dc2626;border-radius:5px;padding:6px 8px;text-align:center">
+                  <div style="font-size:0.78rem;font-weight:600;color:#fca5a5">AngularJS SPA</div>
+                  <div style="font-size:0.64rem;color:#64748b;margin-top:2px">Bundled HTML/JS in JAR</div>
+                  <div style="font-size:0.64rem;color:#f87171;margin-top:2px">⚠ coupled deploy</div>
+                </div>
+                <div style="flex:2;background:#3d1515;border:1px solid #dc2626;border-radius:5px;padding:6px 8px;text-align:center">
+                  <div style="font-size:0.78rem;font-weight:600;color:#fca5a5">AlbumController + AbstractAlbumRepository</div>
+                  <div style="font-size:0.64rem;color:#64748b;margin-top:2px">Album.java: <code>@Entity</code> <code>@Document</code> <code>@RedisHash</code></div>
+                  <div style="font-size:0.64rem;color:#f87171;margin-top:2px">⚠ multi-annotation entity</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="font-size:0.68rem;color:#475569;text-align:center">profile-based DB selection ↓</div>
+
+            <div style="display:flex;gap:5px">
+              <div style="flex:1;background:#2a220f;border:1px solid #ca8a04;border-radius:5px;padding:5px;text-align:center">
+                <div style="font-size:0.72rem;font-weight:600;color:#fde68a">H2</div>
+                <div style="font-size:0.62rem;color:#64748b">default</div>
+              </div>
+              <div style="flex:1;background:#2a220f;border:1px solid #ca8a04;border-radius:5px;padding:5px;text-align:center">
+                <div style="font-size:0.72rem;font-weight:600;color:#fde68a">MySQL</div>
+                <div style="font-size:0.62rem;color:#64748b">jdbc profile</div>
+              </div>
+              <div style="flex:1;background:#2a220f;border:1px solid #ca8a04;border-radius:5px;padding:5px;text-align:center">
+                <div style="font-size:0.72rem;font-weight:600;color:#fde68a">MongoDB</div>
+                <div style="font-size:0.62rem;color:#64748b">mongo profile</div>
+              </div>
+              <div style="flex:1;background:#2a220f;border:1px solid #ca8a04;border-radius:5px;padding:5px;text-align:center">
+                <div style="font-size:0.72rem;font-weight:600;color:#fde68a">Redis</div>
+                <div style="font-size:0.62rem;color:#64748b">redis profile</div>
+              </div>
+            </div>
+
+            <div style="background:#1e2235;border:1px solid #475569;border-radius:5px;padding:6px 10px;font-size:0.72rem;color:#94a3b8">
+              ☁ Cloud Foundry: <code>manifest.yml</code> → <code>VCAP_SERVICES</code> → <code>spring-cloud-connectors</code> (EOL)
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:0.75rem">
+        <h3>Anti-patterns identified</h3>
+        <div class="card card--red">
+          <ul>
+            <li><strong>Multi-annotation entity</strong> — <code>Album.java</code> carries <code>@Entity</code>, <code>@Document</code>, <code>@RedisHash</code> simultaneously</li>
+            <li><strong>SPA bundled in JAR</strong> — AngularJS compiled into the Spring Boot artifact; cannot deploy UI independently</li>
+            <li><strong>CF lock-in</strong> — <code>manifest.yml</code> + EOL <code>spring-cloud-connectors</code>; infra baked into app</li>
+            <li><strong>Zero API contract</strong> — no OpenAPI spec; consumers depend on observed HTTP behavior</li>
+            <li><strong>No characterization tests</strong> — behavior completely unpinned before extraction</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom:0.5rem">Extraction seams</h3>
+          <ul>
+            <li>Album CRUD REST boundary in <code>AlbumController.java</code></li>
+            <li>Repository interfaces per DB: <code>/jpa/</code>, <code>/mongodb/</code>, <code>/redis/</code></li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+    <div style="padding-top:8px;font-size:0.72rem;color:#475569;border-top:1px solid #1e2235;text-align:center;margin-top:6px">
+      C4 Model · Level 2: Container — Legacy architecture. Coupling anti-patterns that drive the modernization.
+    </div>
+  </div>
+
+  <!-- SLIDE 6: C4 Level 2 — New Architecture (After) -->
+  <div class="slide" id="slide-6">
+    <h2>C4 Level 2 — New Architecture <span style="font-size:1rem;color:#64748b;font-weight:400">(After)</span></h2>
+    <div style="display:flex;gap:1.5rem;flex:1">
+
+      <div style="flex:2;display:flex;flex-direction:column;gap:0.5rem">
+
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <div style="background:#1e3a5f;border:1px solid #2563eb;border-radius:6px;padding:6px 14px;font-size:0.82rem;font-weight:600;color:#f1f5f9">◉ Music Catalog User &nbsp;<span style="font-style:italic;font-weight:400;color:#64748b;font-size:0.68rem">[Person]</span></div>
+          <div style="font-size:0.7rem;color:#64748b">HTTPS ↓</div>
+        </div>
+
+        <div style="border:2px dashed #2563eb55;border-radius:12px;padding:10px;flex:1;position:relative">
+          <span style="position:absolute;top:-10px;left:14px;background:#0f0f1a;padding:0 8px;font-size:0.7rem;color:#7dd3fc;font-weight:600">MUSIC CATALOG SYSTEM</span>
+
+          <div style="display:flex;flex-direction:column;gap:5px;height:100%;justify-content:space-evenly">
+
+            <div style="background:#0f2a1a;border:1px solid #16a34a;border-radius:6px;padding:7px 10px;display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-size:0.85rem;font-weight:600;color:#86efac">AngularJS SPA</div>
+                <div style="font-size:0.68rem;color:#64748b">[Container · Web Browser · JavaScript]</div>
+              </div>
+              <span style="font-size:0.64rem;background:#1a3d1a;color:#4ade80;padding:2px 6px;border-radius:3px;border:1px solid #16a34a">planned: standalone</span>
+            </div>
+
+            <div style="text-align:center;font-size:0.68rem;color:#475569">REST / JSON &nbsp;↓</div>
+
+            <div style="background:#2a220f;border:1px solid #ca8a04;border-radius:6px;padding:7px 10px;display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-size:0.85rem;font-weight:600;color:#fde68a">API Gateway</div>
+                <div style="font-size:0.68rem;color:#64748b">[Container · Nginx / Proxy]</div>
+              </div>
+              <span style="font-size:0.64rem;background:#3a2f0f;color:#ca8a04;padding:2px 6px;border-radius:3px;border:1px solid #ca8a04">planned</span>
+            </div>
+
+            <div style="text-align:center;font-size:0.68rem;color:#475569">REST / JSON &nbsp;↓</div>
+
+            <div style="background:#0f2a1a;border:2px solid #16a34a;border-radius:6px;padding:7px 10px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline">
+                <span style="font-size:0.85rem;font-weight:600;color:#4ade80">Album Service :3001 &nbsp;<span style="font-size:0.64rem;font-weight:400;background:#0a2010;color:#4ade80;padding:1px 5px;border-radius:3px;border:1px solid #16a34a">running</span></span>
+                <span style="font-size:0.68rem;color:#64748b">[Container · Node.js / Express]</span>
+              </div>
+              <div style="display:flex;gap:6px;margin-top:5px">
+                <div style="flex:1;background:#173d17;border:1px solid #16a34a;border-radius:4px;padding:4px 8px;text-align:center">
+                  <div style="font-size:0.72rem;font-weight:600;color:#86efac">routes/albums.js</div>
+                  <div style="font-size:0.62rem;color:#64748b">5 REST endpoints</div>
+                </div>
+                <div style="flex:1;background:#173d17;border:1px solid #16a34a;border-radius:4px;padding:4px 8px;text-align:center">
+                  <div style="font-size:0.72rem;font-weight:600;color:#86efac">acl/albumAdapter.js</div>
+                  <div style="font-size:0.62rem;color:#64748b">Spring → clean domain</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="text-align:center;font-size:0.68rem;color:#475569">SQL &nbsp;↓</div>
+
+            <div style="background:#2a220f;border:1px solid #ca8a04;border-radius:6px;padding:7px 10px;display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-size:0.85rem;font-weight:600;color:#fde68a">Album Database</div>
+                <div style="font-size:0.68rem;color:#64748b">[Container · PostgreSQL — H2 now]</div>
+              </div>
+              <span style="font-size:0.64rem;background:#3a2f0f;color:#ca8a04;padding:2px 6px;border-radius:3px;border:1px solid #ca8a04">per-service split planned</span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:1;display:flex;flex-direction:column;gap:0.75rem">
+        <h3>Improvements over legacy</h3>
+        <div class="card card--green">
+          <ul>
+            <li><strong>Decoupled deploy</strong> — each container ships and scales independently</li>
+            <li><strong>Clean API contract</strong> — no Spring annotations in public responses; ACL enforces boundary</li>
+            <li><strong>Zero CF dependency</strong> — no manifest.yml, no spring-cloud-connectors</li>
+            <li><strong>Single DB per service</strong> — one storage technology, no multi-annotation entity</li>
+            <li><strong>Contract tested</strong> — 10+ tests pin the API shape independently</li>
+          </ul>
+        </div>
+        <div class="card card--accent">
+          <h3 style="margin-bottom:0.5rem">Boundary enforcement</h3>
+          <ul>
+            <li>PreToolUse hook: hard block on Spring annotations in service routes</li>
+            <li>CLAUDE.md: preference signal to use ACL adapter</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+    <div style="padding-top:8px;font-size:0.72rem;color:#475569;border-top:1px solid #1e2235;text-align:center;margin-top:6px">
+      C4 Model · Level 2: Container — New architecture. Clean separation, no CF coupling, per-service databases.
+    </div>
+  </div>
+
+  <!-- SLIDE 7: Modernization Roadmap -->
+  <div class="slide" id="slide-7">
     <h2>Modernization Roadmap</h2>
     <div class="grid grid-2" style="gap:1.25rem">
       <div class="card card--green">
@@ -328,8 +554,8 @@
     </div>
   </div>
 
-  <!-- SLIDE 5: Migration Plan Detail -->
-  <div class="slide" id="slide-5">
+  <!-- SLIDE 8: Migration Plan Detail -->
+  <div class="slide" id="slide-8">
     <h2>Migration Plan — Phases 3 &amp; 4</h2>
     <div class="grid grid-2">
       <div>
@@ -374,8 +600,8 @@
     </div>
   </div>
 
-  <!-- SLIDE 6: What We Built -->
-  <div class="slide" id="slide-6">
+  <!-- SLIDE 9: What We Built -->
+  <div class="slide" id="slide-9">
     <h2>What We Built</h2>
     <div class="grid grid-2">
       <div>
@@ -423,8 +649,8 @@
     </div>
   </div>
 
-  <!-- SLIDE 7: Key Decisions -->
-  <div class="slide" id="slide-7">
+  <!-- SLIDE 10: Key Decisions -->
+  <div class="slide" id="slide-10">
     <h2>Key Decisions (ADRs)</h2>
     <div class="grid" style="gap:1rem">
       <div class="card card--accent">
@@ -446,8 +672,8 @@
     </div>
   </div>
 
-  <!-- SLIDE 8: How We Used Claude Code -->
-  <div class="slide" id="slide-8">
+  <!-- SLIDE 11: How We Used Claude Code -->
+  <div class="slide" id="slide-11">
     <h2>How We Used Claude Code</h2>
     <div class="grid grid-2">
       <div>
@@ -478,8 +704,8 @@
     </div>
   </div>
 
-  <!-- SLIDE 9: What's Next -->
-  <div class="slide" id="slide-9">
+  <!-- SLIDE 12: What's Next -->
+  <div class="slide" id="slide-12">
     <h2>If We Had More Time</h2>
     <div class="grid grid-2">
       <div>
@@ -522,13 +748,13 @@
 
 <div class="nav">
   <button id="prev" onclick="navigate(-1)" disabled>← Prev</button>
-  <span class="slide-counter" id="counter">1 / 9</span>
+  <span class="slide-counter" id="counter">1 / 12</span>
   <button id="next" onclick="navigate(1)">Next →</button>
 </div>
 
 <script>
   let current = 1;
-  const total = 9;
+  const total = 12;
 
   function navigate(dir) {
     document.getElementById('slide-' + current).classList.remove('active');
