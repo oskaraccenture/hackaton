@@ -285,8 +285,97 @@
     </div>
   </div>
 
-  <!-- SLIDE 4: What We Built -->
+  <!-- SLIDE 4: Modernization Roadmap -->
   <div class="slide" id="slide-4">
+    <h2>Modernization Roadmap</h2>
+    <div class="grid grid-2" style="gap:1.25rem">
+      <div class="card card--green">
+        <h3>Phase 1 — Understand <span class="badge badge--done">done</span></h3>
+        <ul>
+          <li>Map call graph: <code>AbstractAlbumRepository</code> hierarchy</li>
+          <li>Identify primary coupling risk: multi-DB profile pattern + CF connectors</li>
+          <li>Pin HTTP behavior with characterization tests (bugs included)</li>
+          <li>ADR-001: Strangler Fig selected over Big-Bang / Lift-and-Shift</li>
+        </ul>
+      </div>
+      <div class="card card--green">
+        <h3>Phase 2 — Extract <span class="badge badge--done">done</span></h3>
+        <ul>
+          <li>Define clean REST contract — no Spring annotations in public shape</li>
+          <li>Build ACL adapter: Spring model → clean domain (<code>acl/albumAdapter.js</code>)</li>
+          <li>Implement <code>album-service</code> (Node.js/Express, 5 CRUD endpoints, :3001)</li>
+          <li>Contract tests prove API shape independently of monolith</li>
+        </ul>
+      </div>
+      <div class="card card--yellow">
+        <h3>Phase 3 — Route <span class="badge badge--partial">next · 4 weeks</span></h3>
+        <ul>
+          <li>Deploy API gateway / façade in front of both services</li>
+          <li>Database-per-service split (shared H2 → Postgres per service)</li>
+          <li>Canary traffic shift: 10% → 50% → 100% to album-service</li>
+          <li>Characterization suite as automated CI regression gate</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:#475569; background:#13131f">
+        <h3>Phase 4 — Retire <span class="badge badge--skip">future · weeks 4–8</span></h3>
+        <ul>
+          <li>Remove <code>spring-cloud-connectors</code> + delete <code>manifest.yml</code></li>
+          <li>Extract AngularJS frontend as independent SPA deployment</li>
+          <li>Clean <code>Album.java</code> — remove <code>@Entity</code>/<code>@Document</code>/<code>@RedisHash</code></li>
+          <li>Archive <code>/legacy</code> — monolith becomes read-only history</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: Migration Plan Detail -->
+  <div class="slide" id="slide-5">
+    <h2>Migration Plan — Phases 3 &amp; 4</h2>
+    <div class="grid grid-2">
+      <div>
+        <h3>Phase 3: Route (weeks 1–4)</h3>
+        <div class="card card--accent">
+          <ul>
+            <li><strong>Week 1</strong> — Deploy façade; route <code>/api/albums</code> to album-service; feature flag for instant legacy fallback</li>
+            <li><strong>Week 2</strong> — DB-per-service split; write + verify data migration script</li>
+            <li><strong>Week 3</strong> — Canary rollout (10% → 50%); monitor error rates; characterization tests as gate</li>
+            <li><strong>Week 4</strong> — 100% traffic cut; legacy album endpoints dark; decommission alert</li>
+          </ul>
+        </div>
+        <div class="card card--green" style="margin-top:1rem">
+          <h3>Success criteria</h3>
+          <ul>
+            <li>All contract tests green against live service</li>
+            <li>Zero characterization test regressions</li>
+            <li>p99 latency ≤ legacy baseline</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <h3>Phase 4: Retire (weeks 4–8)</h3>
+        <div class="card" style="border-color:#475569; background:#13131f">
+          <ul>
+            <li>Remove <code>spring-cloud-connectors</code> from <code>build.gradle</code></li>
+            <li>Delete <code>manifest.yml</code>; update deployment docs to container / k8s</li>
+            <li>Extract AngularJS SPA — separate repo, separate CI pipeline</li>
+            <li>Clean <code>Album.java</code> of multi-persistence annotations</li>
+            <li>Archive <code>/legacy</code> as read-only — no further changes</li>
+          </ul>
+        </div>
+        <div class="card card--yellow" style="margin-top:1rem">
+          <h3>Risk mitigations</h3>
+          <ul>
+            <li>Feature flag on façade — instant rollback to legacy at any point</li>
+            <li>PreToolUse hook — permanent hard block on annotation leakage</li>
+            <li>Characterization suite in CI — regression signal before every merge</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: What We Built -->
+  <div class="slide" id="slide-6">
     <h2>What We Built</h2>
     <div class="grid grid-2">
       <div>
@@ -334,8 +423,8 @@
     </div>
   </div>
 
-  <!-- SLIDE 5: Key Decisions -->
-  <div class="slide" id="slide-5">
+  <!-- SLIDE 7: Key Decisions -->
+  <div class="slide" id="slide-7">
     <h2>Key Decisions (ADRs)</h2>
     <div class="grid" style="gap:1rem">
       <div class="card card--accent">
@@ -357,8 +446,8 @@
     </div>
   </div>
 
-  <!-- SLIDE 6: How We Used Claude Code -->
-  <div class="slide" id="slide-6">
+  <!-- SLIDE 8: How We Used Claude Code -->
+  <div class="slide" id="slide-8">
     <h2>How We Used Claude Code</h2>
     <div class="grid grid-2">
       <div>
@@ -389,8 +478,8 @@
     </div>
   </div>
 
-  <!-- SLIDE 7: What's Next -->
-  <div class="slide" id="slide-7">
+  <!-- SLIDE 9: What's Next -->
+  <div class="slide" id="slide-9">
     <h2>If We Had More Time</h2>
     <div class="grid grid-2">
       <div>
@@ -433,13 +522,13 @@
 
 <div class="nav">
   <button id="prev" onclick="navigate(-1)" disabled>← Prev</button>
-  <span class="slide-counter" id="counter">1 / 7</span>
+  <span class="slide-counter" id="counter">1 / 9</span>
   <button id="next" onclick="navigate(1)">Next →</button>
 </div>
 
 <script>
   let current = 1;
-  const total = 7;
+  const total = 9;
 
   function navigate(dir) {
     document.getElementById('slide-' + current).classList.remove('active');
