@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Fires on Stop. Compares actual project state to memory files and prints update checklist.
 
-MEMORY_DIR="/home/oskarc35/.claude/projects/-home-oskarc35-workshop-claude-code-hackathon-hackaton/memory"
-REPO="/home/oskarc35/workshop/claude-code-hackathon/hackaton"
+REPO="${CLAUDE_PROJECT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"
+MEMORY_DIR="${HOME}/.claude/projects/$(echo "$REPO" | sed 's|[/\\]|-|g' | sed 's|^-||')/memory"
 
 issues=0
 

@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash /home/oskarc35/workshop/claude-code-hackathon/hackaton/.claude/hooks/memory-check.sh"
+            "command": "bash .claude/hooks/memory-check.sh"
           }
         ]
       }
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash /home/oskarc35/workshop/claude-code-hackathon/hackaton/.claude/hooks/pre-tool-use.sh"
+            "command": "bash .claude/hooks/pre-tool-use.sh"
           }
         ]
       }
