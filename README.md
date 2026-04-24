@@ -1,17 +1,17 @@
 # Team [TEAM_NAME]
 
 ## Participants
-- [Name] (PM / Product)
-- [Name] (Architect)
-- [Name] (Developer)
-- [Name] (Tester / Quality)
+- Grzegorz Jankowiak (PM / Product)
+- Oskar Cieślikiewicz (Architect)
+- Jacek Kucharski (Developer)
+- Marcin Kurek (Tester / Quality)
 
 ## Scenario
 Scenario 1: Code Modernization — "The Monolith"
 
 ## What We Built
 
-Spring Music is a Spring Boot application originally built for Cloud Foundry. It manages an album catalog and demonstrates multi-database backends (MySQL, PostgreSQL, MongoDB, Redis) through Spring profiles and `AbstractAlbumRepository` implementations. The deployment model is tied to Cloud Foundry `manifest.yml` and Spring Cloud Connectors — both of which are end-of-life.
+Spring Music is a Spring Boot application originally built for Cloud Foundry. It manages an album catalog and demonstrates multi-database backends (MySQL, PostgreSQL, MongoDB, Redis) through Spring profiles and profile-based `CrudRepository` implementations (JPA / MongoDB / Redis). The deployment model is tied to Cloud Foundry `manifest.yml` and `java-cfenv-boot` — both of which are end-of-life.
 
 We applied the **Strangler Fig pattern** to extract the Album domain into a standalone REST microservice with a clean, Cloud-Foundry-free API contract. The legacy monolith remains operational. A new `album-service` sits behind an API façade with an anti-corruption layer that prevents the legacy Spring data model from leaking into the new service's public shape.
 
@@ -23,7 +23,7 @@ What's faked: real database backends — H2 in-memory for demo.
 
 | # | Challenge | Status | Notes |
 |---|---|---|---|
-| 1 | The Stories | done | 4 user stories with acceptance criteria in `/stories` |
+| 1 | The Stories | done | 22 user stories with acceptance criteria in `/stories` |
 | 2 | The Patient | done (option B) | spring-music monolith in `/legacy` |
 | 3 | The Map | done | Decomposition ADR in `/decisions/001-modernization-strategy.md` |
 | 4 | The Pin | done | Characterization tests in `/tests/characterization` |
@@ -74,7 +74,7 @@ Requires: Java 17+, Node.js 18+. No Docker needed for demo.
 
 ## How We Used Claude Code
 
-- **Legacy archaeology** — used Claude to map the call graph in `AbstractAlbumRepository` and rank extraction risk per seam. Matched our human analysis in 3 of 4 decisions.
+- **Legacy archaeology** — used Claude to map the profile-based `CrudRepository` implementations and rank extraction risk per seam. Matched our human analysis in 3 of 4 decisions.
 - **Characterization tests** — Claude pinned actual HTTP behavior (response shapes, status codes, known edge cases) faster than writing them manually.
 - **CLAUDE.md-driven boundaries** — taught Claude the ACL rule once; it respected it across all subsequent service code generations.
 - **ADR writing** — Claude drafted ADR-001 and ADR-003 from a bullet list; we edited the "what we chose not to do" sections.
