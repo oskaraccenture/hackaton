@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code Modernization — Hackathon Presentation</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #0f0f1a;
+    color: #e2e8f0;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .slides { flex: 1; position: relative; overflow: hidden; }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    padding: 60px 80px;
+    flex-direction: column;
+    justify-content: center;
+    background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+  }
+  .slide.active { display: flex; }
+
+  .slide--title {
+    align-items: center;
+    text-align: center;
+  }
+
+  h1 { font-size: 3.2rem; font-weight: 700; line-height: 1.1; color: #f8fafc; }
+  h2 { font-size: 2rem; font-weight: 600; color: #7dd3fc; margin-bottom: 1.5rem; }
+  h3 { font-size: 1.3rem; font-weight: 600; color: #94a3b8; margin-bottom: 0.75rem; }
+
+  .subtitle { font-size: 1.3rem; color: #94a3b8; margin-top: 1rem; }
+  .tag {
+    display: inline-block;
+    background: #1e3a5f;
+    color: #7dd3fc;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin: 4px;
+    border: 1px solid #2563eb33;
+  }
+
+  .grid { display: grid; gap: 1.5rem; }
+  .grid-2 { grid-template-columns: 1fr 1fr; }
+  .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .card {
+    background: #1e2235;
+    border: 1px solid #2d3748;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+  }
+  .card--accent { border-color: #2563eb; background: #172040; }
+  .card--green  { border-color: #16a34a; background: #0f2a1a; }
+  .card--red    { border-color: #dc2626; background: #2a0f0f; }
+  .card--yellow { border-color: #ca8a04; background: #2a220f; }
+
+  ul { list-style: none; }
+  ul li { padding: 6px 0; border-bottom: 1px solid #2d374840; font-size: 0.95rem; line-height: 1.5; }
+  ul li:last-child { border-bottom: none; }
+  ul li::before { content: "▸ "; color: #7dd3fc; }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .badge--done    { background: #166534; color: #bbf7d0; }
+  .badge--partial { background: #713f12; color: #fef3c7; }
+  .badge--skip    { background: #374151; color: #9ca3af; }
+
+  .big-number { font-size: 3rem; font-weight: 800; color: #7dd3fc; }
+  .big-label  { font-size: 0.85rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  .arch-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 0.75rem 0;
+    font-size: 0.95rem;
+  }
+  .arch-box {
+    background: #1e3a5f;
+    border: 1px solid #2563eb;
+    border-radius: 8px;
+    padding: 8px 16px;
+    white-space: nowrap;
+    font-weight: 600;
+    color: #bfdbfe;
+  }
+  .arch-box--legacy { background: #3d1515; border-color: #dc2626; color: #fca5a5; }
+  .arch-box--new    { background: #0f2a1a; border-color: #16a34a; color: #86efac; }
+  .arch-box--acl    { background: #2a220f; border-color: #ca8a04; color: #fde68a; }
+  .arrow { color: #475569; font-size: 1.4rem; }
+
+  .team-member { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .avatar {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; font-weight: 700;
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 40px;
+    background: #0a0a14;
+    border-top: 1px solid #1e2235;
+    font-size: 0.85rem;
+    color: #475569;
+  }
+  .nav button {
+    background: #1e2235;
+    border: 1px solid #2d3748;
+    color: #94a3b8;
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background 0.15s;
+  }
+  .nav button:hover { background: #2d3748; color: #f1f5f9; }
+  .nav button:disabled { opacity: 0.3; cursor: not-allowed; }
+  .slide-counter { font-size: 0.9rem; color: #4b5563; }
+
+  code {
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    background: #1e2235;
+    border: 1px solid #2d3748;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    color: #93c5fd;
+  }
+  pre {
+    background: #0d1117;
+    border: 1px solid #2d3748;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: #e2e8f0;
+    overflow-x: auto;
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+  }
+</style>
+</head>
+<body>
+
+<div class="slides">
+
+  <!-- SLIDE 1: Title -->
+  <div class="slide slide--title active" id="slide-1">
+    <div>
+      <div style="margin-bottom:1.5rem">
+        <span class="tag">Scenario 1</span>
+        <span class="tag">Code Modernization</span>
+        <span class="tag">Strangler Fig</span>
+      </div>
+      <h1>From Monolith<br>to Microservice</h1>
+      <p class="subtitle">Modernizing spring-music — a Spring Boot + Cloud Foundry legacy</p>
+      <div style="margin-top:2.5rem; display:flex; gap:2rem; justify-content:center; flex-wrap:wrap">
+        <div class="team-member">
+          <div class="avatar">A</div>
+          <span style="font-size:0.85rem;color:#94a3b8">[Name] — Architect</span>
+        </div>
+        <div class="team-member">
+          <div class="avatar">D</div>
+          <span style="font-size:0.85rem;color:#94a3b8">[Name] — Developer</span>
+        </div>
+        <div class="team-member">
+          <div class="avatar">P</div>
+          <span style="font-size:0.85rem;color:#94a3b8">[Name] — PM</span>
+        </div>
+        <div class="team-member">
+          <div class="avatar">Q</div>
+          <span style="font-size:0.85rem;color:#94a3b8">[Name] — Quality</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: The Problem -->
+  <div class="slide" id="slide-2">
+    <h2>The Patient — spring-music</h2>
+    <div class="grid grid-2">
+      <div>
+        <h3>What we inherited</h3>
+        <div class="card card--red">
+          <ul>
+            <li><strong>Multi-annotation entity</strong> — <code>Album.java</code> carries <code>@Entity</code>, <code>@Document</code>, <code>@RedisHash</code> simultaneously</li>
+            <li><strong>Cloud Foundry lock-in</strong> — <code>manifest.yml</code> + end-of-life <code>spring-cloud-connectors</code></li>
+            <li><strong>Bundled frontend</strong> — AngularJS compiled into the JAR, no independent deployment</li>
+            <li><strong>Zero API contract</strong> — no OpenAPI spec; consumers depend on observed behavior</li>
+            <li><strong>No characterization tests</strong> — behavior is completely unpinned</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <h3>The board's ask</h3>
+        <div class="card card--accent">
+          <ul>
+            <li>Remove Cloud Foundry dependency</li>
+            <li>Enable independent service deployment</li>
+            <li>Explicit API contract for consumers</li>
+            <li>Testable — before and after every change</li>
+          </ul>
+        </div>
+        <div style="margin-top:1rem">
+          <h3>Stack</h3>
+          <div class="card">
+            <ul>
+              <li>Legacy: Spring Boot 2.x, Gradle, H2/MySQL/MongoDB/Redis</li>
+              <li>New service: Node.js + Express, SQLite in-memory</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: Strategy -->
+  <div class="slide" id="slide-3">
+    <h2>The Strategy — Strangler Fig</h2>
+    <div class="card card--accent" style="margin-bottom:1.5rem">
+      <p>Extract one service at a time. The monolith stays live. Each service is independently provable before any traffic shift.</p>
+    </div>
+    <div style="margin-bottom:1.5rem">
+      <h3>Architecture — during transition</h3>
+      <div class="arch-row">
+        <div class="arch-box arch-box--legacy">spring-music monolith<br><small>:8080</small></div>
+        <div class="arrow">⟵ still live</div>
+      </div>
+      <div class="arch-row">
+        <div class="arch-box arch-box--new">album-service<br><small>:3001</small></div>
+        <div class="arrow">←</div>
+        <div class="arch-box arch-box--acl">ACL adapter</div>
+        <div class="arrow">←</div>
+        <div>New clients / migrated traffic</div>
+      </div>
+    </div>
+    <div class="grid grid-3">
+      <div class="card card--red">
+        <h3>Why not Big-Bang</h3>
+        <ul>
+          <li>High failure rate</li>
+          <li>No business continuity</li>
+          <li>Requires full domain understanding upfront</li>
+        </ul>
+      </div>
+      <div class="card card--yellow">
+        <h3>Why not Lift-and-Shift</h3>
+        <ul>
+          <li>Moves CF to container, solves nothing</li>
+          <li>Multi-annotation problem remains</li>
+          <li>False sense of done</li>
+        </ul>
+      </div>
+      <div class="card card--green">
+        <h3>Why Strangler Fig</h3>
+        <ul>
+          <li>Zero big-bang risk</li>
+          <li>Incremental, provable progress</li>
+          <li>Characterization tests as safety net</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: What We Built -->
+  <div class="slide" id="slide-4">
+    <h2>What We Built</h2>
+    <div class="grid grid-2">
+      <div>
+        <h3>Challenges completed</h3>
+        <div class="card">
+          <ul>
+            <li>The Stories <span class="badge badge--done">done</span></li>
+            <li>The Patient (option B) <span class="badge badge--done">done</span></li>
+            <li>The Map (ADRs) <span class="badge badge--done">done</span></li>
+            <li>The Pin (characterization tests) <span class="badge badge--done">done</span></li>
+            <li>The Cut (album-service) <span class="badge badge--done">done</span></li>
+            <li>The Fence (ACL + hook) <span class="badge badge--partial">partial</span></li>
+            <li>The Weekend (cutover) <span class="badge badge--partial">partial</span></li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <h3>Key files</h3>
+        <div class="card">
+          <ul>
+            <li><code>/legacy/</code> — spring-music monolith</li>
+            <li><code>/services/album-service/</code> — extracted service</li>
+            <li><code>/services/album-service/acl/</code> — anti-corruption layer</li>
+            <li><code>/tests/characterization/</code> — behavior pinning</li>
+            <li><code>/decisions/</code> — 3 ADRs</li>
+            <li><code>CLAUDE.md</code> — 3-level project config</li>
+            <li><code>/.claude/commands/</code> — 3 custom slash commands</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="grid grid-3" style="margin-top:1.5rem">
+      <div class="card" style="text-align:center">
+        <div class="big-number">3</div>
+        <div class="big-label">ADRs written</div>
+      </div>
+      <div class="card" style="text-align:center">
+        <div class="big-number">5</div>
+        <div class="big-label">API endpoints</div>
+      </div>
+      <div class="card" style="text-align:center">
+        <div class="big-number">10+</div>
+        <div class="big-label">contract tests</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: Key Decisions -->
+  <div class="slide" id="slide-5">
+    <h2>Key Decisions (ADRs)</h2>
+    <div class="grid" style="gap:1rem">
+      <div class="card card--accent">
+        <h3>ADR-001 — Strangler Fig</h3>
+        <p style="font-size:0.9rem;color:#94a3b8;margin-top:4px">Monolith stays live. Extract one service at a time. Characterization tests pin behavior before any extraction.</p>
+      </div>
+      <div class="card">
+        <h3>ADR-002 — spring-music as legacy (option B)</h3>
+        <p style="font-size:0.9rem;color:#94a3b8;margin-top:4px">Real code, real anti-patterns (<code>Album.java</code> carries JPA+MongoDB+Redis annotations), genuine CF coupling. More interesting than generated ugliness.</p>
+      </div>
+      <div class="card card--yellow">
+        <h3>ADR-003 — PreToolUse hook vs. CLAUDE.md prompt</h3>
+        <p style="font-size:0.9rem;color:#94a3b8;margin-top:4px">
+          <strong>Hook</strong> = deterministic hard block for Spring annotations leaking into service routes.<br>
+          <strong>Prompt</strong> = probabilistic preference for using the ACL adapter.<br>
+          Rule: if failure mode is silent contract violation → hook. If suboptimal but correctable → prompt.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: How We Used Claude Code -->
+  <div class="slide" id="slide-6">
+    <h2>How We Used Claude Code</h2>
+    <div class="grid grid-2">
+      <div>
+        <h3>Where it saved the most time</h3>
+        <div class="card card--green">
+          <ul>
+            <li><strong>Legacy archaeology</strong> — call-graph analysis of <code>AbstractAlbumRepository</code> in minutes</li>
+            <li><strong>Characterization tests</strong> — pinned HTTP behavior including known quirks faster than writing manually</li>
+            <li><strong>ADR drafting</strong> — bullet list → full ADR with "what we chose NOT to do" sections</li>
+            <li><strong>CLAUDE.md-driven boundaries</strong> — taught ACL rule once, respected across all generations</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <h3>Techniques we reached for</h3>
+        <div class="card">
+          <ul>
+            <li>3-level CLAUDE.md (project / legacy / services)</li>
+            <li>PreToolUse hook for deterministic boundary enforcement</li>
+            <li>Custom slash commands: <code>/extract-service</code>, <code>/characterize</code>, <code>/write-adr</code></li>
+            <li>Plan Mode before every multi-file extraction</li>
+          </ul>
+        </div>
+        <div class="card card--accent" style="margin-top:1rem">
+          <p style="font-size:0.9rem"><strong>Biggest surprise:</strong> Claude identified the multi-DB profile pattern as the primary coupling risk — not the entity model, which we assumed going in.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: What's Next -->
+  <div class="slide" id="slide-7">
+    <h2>If We Had More Time</h2>
+    <div class="grid grid-2">
+      <div>
+        <h3>Backlog (priority order)</h3>
+        <div class="card">
+          <ul>
+            <li>Database-per-service split — separate H2 instances per service</li>
+            <li>API gateway / façade routing traffic between legacy and new service</li>
+            <li>Extract the AngularJS frontend to a separate deployment</li>
+            <li>Complete <code>PreToolUse</code> hook — currently scaffolded only</li>
+            <li>CI pipeline: characterization suite as regression gate</li>
+            <li>The Scorecard — eval harness for LLM-driven refactoring confidence</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <h3>Held together with tape</h3>
+        <div class="card card--red">
+          <ul>
+            <li>Shared in-memory SQLite — must split before any production use</li>
+            <li>No authentication — legacy has none either; both need it</li>
+            <li>AngularJS frontend still calls legacy directly — no façade yet</li>
+          </ul>
+        </div>
+        <div class="card card--green" style="margin-top:1rem">
+          <ul>
+            <li>Monolith characterization tests: green</li>
+            <li>album-service contract tests: green</li>
+            <li>ACL boundary: enforced by hook + CLAUDE.md</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:2rem; color:#475569; font-size:0.9rem">
+      Generated with Claude Code · Scenario 1: Code Modernization
+    </div>
+  </div>
+
+</div><!-- /slides -->
+
+<div class="nav">
+  <button id="prev" onclick="navigate(-1)" disabled>← Prev</button>
+  <span class="slide-counter" id="counter">1 / 7</span>
+  <button id="next" onclick="navigate(1)">Next →</button>
+</div>
+
+<script>
+  let current = 1;
+  const total = 7;
+
+  function navigate(dir) {
+    document.getElementById('slide-' + current).classList.remove('active');
+    current = Math.max(1, Math.min(total, current + dir));
+    document.getElementById('slide-' + current).classList.add('active');
+    document.getElementById('counter').textContent = current + ' / ' + total;
+    document.getElementById('prev').disabled = current === 1;
+    document.getElementById('next').disabled = current === total;
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') navigate(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   navigate(-1);
+  });
+</script>
+</body>
+</html>

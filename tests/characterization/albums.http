@@ -1,0 +1,55 @@
+# Characterization tests — spring-music Album API
+# Format: REST Client (VS Code) / JetBrains HTTP Client
+# Run against: http://localhost:8080 (legacy monolith with ./gradlew bootRun)
+
+@baseUrl = http://localhost:8080
+
+### GET all albums — should return JSON array with id, title, artist, genre, trackCount, releaseYear
+GET {{baseUrl}}/albums
+Accept: application/json
+
+###
+
+### GET single album — replace {id} with a real id from the list above
+# GET {{baseUrl}}/albums/{id}
+# Accept: application/json
+
+###
+
+### GET non-existent album — should return 404
+GET {{baseUrl}}/albums/nonexistent-000
+Accept: application/json
+
+###
+
+### POST create album — should return created album with server-assigned id
+POST {{baseUrl}}/albums
+Content-Type: application/json
+
+{
+  "title": "Characterization Test Album",
+  "artist": "Test Artist",
+  "releaseYear": "2024",
+  "genre": "Test",
+  "trackCount": 1
+}
+
+###
+
+### PUT update album — replace {id} with id from POST response
+# PUT {{baseUrl}}/albums/{id}
+# Content-Type: application/json
+#
+# {
+#   "id": "{id}",
+#   "title": "Updated Title",
+#   "artist": "Test Artist",
+#   "releaseYear": "2024",
+#   "genre": "Test",
+#   "trackCount": 2
+# }
+
+###
+
+### DELETE album — replace {id} with id from POST response
+# DELETE {{baseUrl}}/albums/{id}
