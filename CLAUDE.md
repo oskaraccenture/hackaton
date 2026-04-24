@@ -89,5 +89,30 @@ Fields from `legacy/src/main/java/.../Album.java` (e.g. `id`, `title`, `artist`,
 ## Claude Code Patterns
 
 - Use Plan Mode before any extraction touching more than one file
-- Custom commands: `/extract-service`, `/characterize`, `/write-adr`
+- Custom commands: `/extract-service`, `/characterize`, `/write-adr`, `/verify-memory`
 - Pass scope explicitly in Task subagent calls — subagents don't inherit coordinator context
+
+## Memory Maintenance Protocol (self-instructions)
+
+Memory lives in: `~/.claude/projects/-home-oskarc35-workshop-claude-code-hackathon-hackaton/memory/`
+
+**At session start:**
+1. Read `MEMORY.md` index — it's auto-loaded, but verify pointers are not stale
+2. If >1 day since last session, run `/verify-memory` to sync state
+
+**During session — update memory immediately when:**
+- A new ADR is written → add entry to `adr_summary.md` + update `project_state.md`
+- A new service is extracted → update `project_architecture.md`
+- A challenge status changes (partial → done) → update `project_state.md`
+- A new convention is established or corrected → update `conventions.md`
+- A new slash command or skill is available → update `skills_reference.md`
+
+**At session end:**
+- The `Stop` hook runs `memory-check.sh` automatically and prints any stale entries
+- Act on every `[STALE]` or `[MISSING]` item before the session ends
+
+**Golden rule:** If a memory file says X and the repo says Y, **the repo is truth**. Update memory, never the other way around.
+
+## Language Rule
+
+**All repository content must be in English** — ADRs, hook scripts, command definitions, comments, echo messages, CLAUDE.md additions. This applies regardless of the language the user writes in. Conversation happens in the user's language; the repo is always English.
