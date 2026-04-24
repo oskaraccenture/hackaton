@@ -99,7 +99,7 @@ npm install
 # Java / Gradle
 export JAVA_HOME="$HOME/.local/java/jdk-11.0.22+7"
 export PATH="$JAVA_HOME/bin:$PATH"
-cd legacy && ./gradlew --version   # prints Gradle 6.7, JVM 11
+cd legacy && ./gradlew --version   # prints Gradle 8.5, JVM 11
 
 # Node / album-service tests
 source "$HOME/.nvm/nvm.sh" && nvm use 20
