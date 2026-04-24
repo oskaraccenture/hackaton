@@ -55,6 +55,72 @@ Strangler Fig extraction of the `spring-music` Spring Boot monolith (`/legacy`) 
 presentation.html   — HTML slide deck for judging
 ```
 
+## Architecture Guidance
+
+### Bounded Contexts in the Monolith
+
+The monolith has one real business domain. Three potential bounded contexts exist; only one is currently extracted:
+
+| Context | Current state | Extraction candidate? |
+|---|---|---|
+| **Albums / Catalog** | Core entity + CRUD endpoints | Yes — already extracted to `album-service` |
+| **Artists** | Free-text `String artist` field on Album | Yes — hidden aggregate; extract when Artist taxonomy is needed |
+| **Genres** | Free-text `String genre` field on Album | Yes — if genre catalog/filtering is needed |
+| **App Info / Platform** | `InfoController` — CF bindings, active profiles | No — operational tooling, not business domain |
+| **System Diagnostics** | `ErrorController` — kill/OOM/throw endpoints | No — test harness only; remove before production |
+
+`Artists` is the strongest next extraction candidate because it requires a **new aggregate** rather than copying the existing Album CRUD shape.
+
+### Are Microservices the Right Target?
+
+**Microservices are overkill for this domain at this scale.** Arguments:
+
+- Single aggregate (`Album`), five CRUD endpoints, no inter-domain workflows
+- No independent team deploying cadences that would justify separate services
+- Operational overhead (service mesh, distributed tracing, service discovery) exceeds value
+- Risk of **distributed monolith** — synchronous chains of services with no independent deployability
+
+**Recommended intermediate step: Modular Monolith.**
+
+Divide the codebase into vertical modules with hard compile-time boundaries before breaking into services:
+
+```
+spring-music/
+  modules/
+    catalog/      — Album entity, repository, service, controller
+    artists/      — Artist entity (promoted from String field)
+    genres/       — Genre taxonomy (promoted from String field)
+    platform/     — Info, health, diagnostics
+  shared/
+    events/       — Domain events (if async flows are added later)
+```
+
+Extract a module to a standalone service only when a concrete driver exists: independent deployment cadence, different scaling profile, or team ownership boundary.
+
+### Strangler Fig Continuation Path (current approach)
+
+The current hackathon approach is valid as a **migration strategy**, not a target topology. To make it production-ready it requires:
+
+1. **API Gateway** in front of both monolith and services (nginx / AWS ALB / Kong) to route traffic
+2. **Feature-flag or header-based routing** to shift traffic incrementally
+3. **Shared Postgres** (or replication) during cutover — monolith H2 + service SQLite is diverged state
+4. **Cutover runbook** (see ADR-004 task)
+
+### Recommended Stack Modernization
+
+Apply these regardless of whether the target is modular monolith or microservices:
+
+| Component | Current | Recommendation | Reason |
+|---|---|---|---|
+| Spring Boot 2.4.0 | EOL | Spring Boot 3.3+ or Quarkus | Security patches, virtual threads (Java 21) |
+| Cloud Foundry deployment | `manifest.yml` + `VCAP_SERVICES` | Docker + Kubernetes / Cloud Run | CF is deprecated in most organizations |
+| AngularJS 1.2.16 | EOL since 2021 | React or Vue 3 | No security updates |
+| Multi-DB profile polymorphism | H2 / MySQL / Postgres / Mongo / Redis | Single engine (Postgres) | False flexibility; real operational risk |
+| Dual identity (`albumId` + `id`) | Two fields for one identifier | Single `id` (UUID) | Eliminates ACL complexity at service boundary |
+| SQLite in album-service | In-memory or file | Postgres (same as monolith) | Easier cutover, avoids data drift |
+
+---
+
 ## Team Conventions
 
 - **Commits:** `type(scope): description` — types: `feat`, `fix`, `test`, `adr`, `chore`

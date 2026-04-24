@@ -1,11 +1,10 @@
 buildscript {
     ext {
-        springBootVersion = '2.4.0'
+        springBootVersion = '2.7.18'
         javaCfEnvVersion = '2.1.2.RELEASE'
     }
 
     repositories {
-        jcenter()
         mavenCentral()
         maven { url "https://repo.spring.io/plugins-release" }
     }
@@ -44,7 +43,7 @@ dependencies {
     // JPA Persistence
     runtimeOnly "org.apache.commons:commons-pool2:2.6.0"
     runtimeOnly "com.h2database:h2"
-    runtimeOnly "mysql:mysql-connector-java"
+    runtimeOnly "com.mysql:mysql-connector-j"
     runtimeOnly "org.postgresql:postgresql"
     runtimeOnly "com.microsoft.sqlserver:mssql-jdbc"
 
