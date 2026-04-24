@@ -1,4 +1,4 @@
-# Team [TEAM_NAME]
+# Team [Print Corner]
 
 ## Participants
 - Grzegorz Jankowiak (PM / Product)
